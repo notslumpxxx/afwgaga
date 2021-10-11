@@ -85,6 +85,13 @@ silentaim:addToggle("Visible Check", nil, function(value)
     Aiming.VisibleCheck = value
 end)
 
+silentaim:addKeybind("Toggle Keybind", Enum.KeyCode.One, function()
+
+venyx:toggle()
+end, function()
+
+end)
+
 -- // Overwrite to account downed
 function Aiming.Check()
     -- // Check A
