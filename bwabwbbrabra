@@ -1,0 +1,169 @@
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/zxciaz/VenyxUI/main/Reuploaded"))() --someone reuploaded it so I put it in place of the original back up so guy can get free credit.
+local venyx = library.new("Weirdo Hub;", 5013109572)
+
+local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Pi-314Git/CreditsToStefanuk12/main/ModuleF.lua"))()
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP:Toggle(false)
+ESP.Tracers = false
+ESP.Names = false
+ESP.Boxes = false
+Aiming.TeamCheck(false)
+Aiming.VisibleCheck = false
+-- // Dependencies
+
+-- // Services
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+-- // Vars
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local CurrentCamera = Workspace.CurrentCamera
+
+-- themes
+local themes = {
+Background = Color3.fromRGB(24, 24, 24),
+Glow = Color3.fromRGB(0, 0, 0),
+Accent = Color3.fromRGB(10, 10, 10),
+LightContrast = Color3.fromRGB(20, 20, 20),
+DarkContrast = Color3.fromRGB(14, 14, 14),  
+TextColor = Color3.fromRGB(255, 255, 255)
+}
+
+local DaHoodSettings = {
+    SilentAim = false,
+    AimLock = true,
+    Prediction = 0.165
+}
+
+getgenv().DaHoodSettings = DaHoodSettings
+
+-- Main Page
+local page = venyx:addPage("Main", 5012544693)
+local esp = page:addSection("Esp Information")
+local silentaim = page:addSection("Silent Aim Information")
+
+esp:addToggle("Enable ESP", nil, function(value)
+    ESP:Toggle(value)
+end)
+
+esp:addToggle("Enable Tracers", nil, function(value)
+    ESP.Tracers = value
+end)
+
+esp:addToggle("Enable Boxes", nil, function(value)
+    ESP.Boxes = value
+end)
+
+esp:addToggle("Enable Names", nil, function(value)
+    ESP.Names = value
+end)
+
+silentaim:addToggle("Silent Aim", nil, function(value)
+    DaHoodSettings.SilentAim = value
+end)
+
+silentaim:addToggle("AimLock", nil, function(value)
+    DaHoodSettings.AimLock = value
+end)
+
+silentaim:addToggle("FOV Circle", nil, function(value)
+    Aiming.ShowFOV = value
+end)
+
+silentaim:addSlider("FOV Size", 0, 50, 400, function(value)
+    Aiming.FOV = value
+end)
+
+silentaim:addSlider("Prediction", 0, 50, 500, function(value)
+    DaHoodSettings.Prediction = tonumer("0." .. value)
+end)
+
+silentaim:addToggle("Visible Check", nil, function(value)
+    Aiming.VisibleCheck = value
+end)
+
+-- // Overwrite to account downed
+function Aiming.Check()
+    -- // Check A
+    if not (Aiming.Enabled == true and Aiming.Selected ~= LocalPlayer and Aiming.SelectedPart ~= nil) then
+        return false
+    end
+
+    -- // Check if downed
+    local Character = Aiming.Character(Aiming.Selected)
+    local KOd = Character:WaitForChild("BodyEffects")["K.O"].Value
+    local Grabbed = Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
+
+    -- // Check B
+    if (KOd or Grabbed) then
+        return false
+    end
+
+    -- //
+    return true
+end
+
+-- // Hook
+local __index
+__index = hookmetamethod(game, "__index", function(t, k)
+    -- // Check if it trying to get our mouse's hit or target and see if we can use it
+    if (t:IsA("Mouse") and (k == "Hit" or k == "Target") and Aiming.Check()) then
+        -- // Vars
+        local SelectedPart = Aiming.SelectedPart
+
+        -- // Hit/Target
+        if (DaHoodSettings.SilentAim and (k == "Hit" or k == "Target")) then
+            -- // Hit to account prediction
+            local Hit = SelectedPart.CFrame + (SelectedPart.Velocity * DaHoodSettings.Prediction)
+
+            -- // Return modded val
+            return (k == "Hit" and Hit or SelectedPart)
+        end
+    end
+
+    -- // Return
+    return __index(t, k)
+end)
+
+-- // Aimlock
+RunService:BindToRenderStep("AimLock", 0, function()
+    if (DaHoodSettings.AimLock and Aiming.Check() and UserInputService:IsKeyDown(Enum.KeyCode[string.upper(AimlockKey)])) then
+        -- // Vars
+        local SelectedPart = Aiming.SelectedPart
+
+        -- // Hit to account prediction
+        local Hit = SelectedPart.CFrame + (SelectedPart.Velocity * DaHoodSettings.Prediction)
+
+        -- // Set the camera to face towards the Hit
+        CurrentCamera.CFrame = CFrame.lookAt(CurrentCamera.CFrame.Position, Hit.Position)
+    end
+end)
+
+-- Credits Page
+local page = venyx:addPage("Credits", 5012544693)
+local developer = page:addSection("Developer Information")
+local discord = page:addSection("Discord Information")
+
+developer:addButton("Made By Slump", function()
+
+end)
+
+discord:addButton("https://discord.gg/RJNaVaAWxK", function()
+
+end)
+
+-- Theme Page LAST
+local theme = venyx:addPage("Theme", 5012544693)
+local colors = theme:addSection("Colors")
+
+for theme, color in pairs(themes) do
+colors:addColorPicker(theme, color, function(color3)
+venyx:setTheme(theme, color3)
+end)
+end
+
+-- load
+venyx:SelectPage(venyx.pages[1], true) -- no default for more freedom
