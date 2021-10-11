@@ -16,7 +16,7 @@ local data = {
     ["embeds"] = {
         {
             ["title"] = "**Executed**",
-            ["description"] = "Name: **" ..game.Players.LocalPlayer.Name.."** or **"..game.Players.LocalPlayer.UserId.."** They Executed With **"..webhookcheck.."**".." Here Is Their Game ID Before We PermaBanned Them: **"..joinurl.. "**",
+            ["description"] = "Name: **" ..game.Players.LocalPlayer.Name.."** or **"..game.Players.LocalPlayer.UserId.."** They Executed With **"..webhookcheck.."**".." Here Is Their Game ID: **"..joinurl.. "**",
             ["type"] = "rich",
             ["color"] = "2697513",
             ["image"] = {
